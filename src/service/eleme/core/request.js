@@ -34,35 +34,31 @@ module.exports = class Request {
   }
 
   async hongbao({openid, sign, sid, sn = this.sn}) {
-    try {
-      logger.info('开始领取', sn);
-      const {data = {}} = await this.http.post(
-        `/restapi/marketing/promotion/weixin/${openid}`,
-        {
-          device_id: '',
-          group_sn: sn,
-          hardware_id: '',
-          method: 'phone',
-          phone: '',
-          platform: 4,
-          sign,
-          track_id: '',
-          unionid: 'fuck', // 别问为什么传 fuck，饿了么前端就是这么传的
-          weixin_avatar: '',
-          weixin_username: 'mtdhb.org'
-        },
-        {
-          headers: {
-            'x-shard': `eosid=${parseInt(sn, 16)}`,
-            cookie: `SID=${sid}`
-          }
+    logger.info('开始领取', sn);
+    const {data = {}} = await this.http.post(
+      `/restapi/marketing/promotion/weixin/${openid}`,
+      {
+        device_id: '',
+        group_sn: sn,
+        hardware_id: '',
+        method: 'phone',
+        phone: '',
+        platform: 4,
+        sign,
+        track_id: '',
+        unionid: 'fuck', // 别问为什么传 fuck，饿了么前端就是这么传的
+        weixin_avatar: '',
+        weixin_username: 'mtdhb.org'
+      },
+      {
+        headers: {
+          'x-shard': `eosid=${parseInt(sn, 16)}`,
+          cookie: `SID=${sid}`
         }
-      );
-      logger.info('饿了么响应 %j', data);
-      data.promotion_records = data.promotion_records || [];
-      return data;
-    } catch (e) {
-      return e.response.data;
-    }
+      }
+    );
+    logger.info('饿了么响应 %j', data);
+    data.promotion_records = data.promotion_records || [];
+    return data;
   }
 };
