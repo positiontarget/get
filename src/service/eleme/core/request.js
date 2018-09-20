@@ -21,7 +21,6 @@ module.exports = class Request {
       },
       transformRequest: [
         (data, headers) => {
-          headers['X-Shard'] = `eosid=${parseInt(sn, 16)}`;
           return JSON.stringify(data);
         }
       ],
@@ -34,46 +33,36 @@ module.exports = class Request {
     return data;
   }
 
-  async hongbao(options) {
-    const {phone, check} = options;
-    let count = 0;
-    // 马上要领最佳了，先验证手机号是否成功绑定
-    while (check) {
-      const {account} = await this._hongbao({...options, sn: '29e47b57971c1c9d'});
-      if (account === phone) {
-        break;
-      }
-      if (++count > 5) {
-        throw new Error('未能成功绑定您的手机号码。下一个是最大红包，别再点网站的领取按钮，请手动打开红包链接领取');
-      }
-    }
-    return await this._hongbao(options);
-  }
-
-  async _hongbao({phone, openid, sign, platform, sn}) {
+  async hongbao({openid, sign, sid, sn = this.sn}) {
     try {
-      logger.info('绑定手机号', phone);
-      await this.http.put(`/restapi/v1/weixin/${openid}/phone`, {sign, phone});
-    } catch (e) {}
-
-    logger.info('使用 %s 领取', phone);
-
-    const {data = {}} = await this.http.post(`/restapi/marketing/promotion/weixin/${openid}`, {
-      device_id: '',
-      group_sn: sn || this.sn,
-      hardware_id: '',
-      method: 'phone',
-      phone,
-      platform,
-      sign,
-      track_id: '',
-      unionid: 'fuck', // 别问为什么传 fuck，饿了么前端就是这么传的
-      weixin_avatar: '',
-      weixin_username: ''
-    });
-    logger.info('饿了么响应 %j', data);
-
-    data.promotion_records = data.promotion_records || [];
-    return data;
+      logger.info('开始领取', sn);
+      const {data = {}} = await this.http.post(
+        `/restapi/marketing/promotion/weixin/${openid}`,
+        {
+          device_id: '',
+          group_sn: sn,
+          hardware_id: '',
+          method: 'phone',
+          phone: '',
+          platform: 4,
+          sign,
+          track_id: '',
+          unionid: 'fuck', // 别问为什么传 fuck，饿了么前端就是这么传的
+          weixin_avatar: '',
+          weixin_username: 'mtdhb.org'
+        },
+        {
+          headers: {
+            'x-shard': `eosid=${parseInt(sn, 16)}`,
+            cookie: `SID=${sid}`
+          }
+        }
+      );
+      logger.info('饿了么响应 %j', data);
+      data.promotion_records = data.promotion_records || [];
+      return data;
+    } catch (e) {
+      return e.response.data;
+    }
   }
 };
