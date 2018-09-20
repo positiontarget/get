@@ -1,7 +1,6 @@
 const querystring = require('querystring');
 const cookie2sns = require('./core/cookie2sns');
 const Request = require('./core/request');
-const MobileList = require('./core/mobile-list');
 const logger = require('../../util/logger')('service/eleme');
 const checkCookieResponse = require('../check-cookie-response');
 
@@ -25,7 +24,7 @@ module.exports = async (req, res) => {
   // return (async function check() {
   //   try {
   //     const data = await request.hongbao({
-  //       phone: MobileList.getOne(),
+  //       phone: '',
   //       openid: sns.openid,
   //       sign: sns.eleme_key,
   //       platform: 4

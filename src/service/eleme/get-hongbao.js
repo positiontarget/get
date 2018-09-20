@@ -1,6 +1,5 @@
 const querystring = require('querystring');
 const cookie2sns = require('./core/cookie2sns');
-const MobileList = require('./core/mobile-list');
 const Request = require('./core/request');
 const logger = require('../../util/logger')('service/eleme');
 const CookieStatus = require('../../constant/cookie-status');
@@ -65,9 +64,8 @@ module.exports = async (req, res) => {
   //     while (true) {
   //       // 如果这个是最佳红包，换成指定的手机号领取
   //       const check = number === 1;
-  //       phone = check ? mobile : MobileList.getOne(mobile);
   //       data = await request.hongbao({
-  //         phone,
+  //         phone: '',
   //         check,
   //         openid: sns.openid,
   //         sign: sns.eleme_key,
@@ -78,9 +76,6 @@ module.exports = async (req, res) => {
   //       if (!data || data.ret_code !== 10) {
   //         break;
   //       }
-  //
-  //       // code 10 黑名单
-  //       MobileList.addBlack(phone);
   //
   //       // 是 code 10 并且是你填的那个号码
   //       if (phone === mobile) {
@@ -115,11 +110,7 @@ module.exports = async (req, res) => {
   //           type = 1;
   //         }
   //       }
-  //       // 可用的，并且不是用户填的，存起来用于以后随机
-  //       if (phone !== mobile && data.ret_code !== 1) {
-  //         MobileList.addWhite(phone);
-  //       }
-  //
+
   //       switch (data.ret_code) {
   //         case 1:
   //           // 红包被抢完了
