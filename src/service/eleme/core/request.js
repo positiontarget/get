@@ -21,6 +21,7 @@ module.exports = class Request {
       },
       transformRequest: [
         (data, headers) => {
+          headers['x-shared'] = headers['x-shared'] || `eosid=${parseInt(sn, 16)}`;
           return JSON.stringify(data);
         }
       ],
